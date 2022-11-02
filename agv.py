@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+from matplotlib.transforms import offset_copy
 import ams
 from agvapi import Agv, findLineEdges
 import rospy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from amsagv_msgs.msg import LineStamped
+from math import cos, sin, pi
 
 
 
@@ -46,14 +48,14 @@ with Agv() as robot:
 
     rate = rospy.Rate(50)
     isFirst = True
-    pulzPermm = 111.5 # pulzov na mm
+    pulsePerM = 111.5*1000 # pulzov na m
     deltaLeftPulse = 0
     deltaRightPulse = 0
     lastRightPulse = 0
     lastLeftPulse = 0
     sLeft = 0
     sRight = 0
-    pulseConst = 1/pulzPermm
+    pulseConst = 1/pulsePerM
     vLeft = 0
     vRight = 0
     lastTime = 0
@@ -74,27 +76,40 @@ with Agv() as robot:
       encLeft, encRight, encHeading = robot.getEncoders()
 
       #TODO Implement odometry here ...
-      print('Encoders: left={}, right={}, heading={}'.format(encLeft, encRight, encHeading))
-
+      print('Encoders: ldeltaRightPulseeft={}, right={}, heading={}'.format(encLeft, encRight, encHeading))
+      gamma = ams.wrapToPi(((encHeading-910)*2*pi)/(8192))
       if isFirst:
         # Just read
-        lastLeftPulse= encLeft
+        lastLeftPulse= encLeft        
         lastRightPulse = encRight
         # TODO add heading
+        # gamma = ((encHeading-1100)*2*pi)/(8192)
+        x = 0
+        y = 0
+        phi = 0
         isFirst = False
       elif not isFirst:
         # Read and move
-        deltaTime = t-lastTime
+        # deltaTime = float(t-lastTime)
         deltaLeftPulse = encLeft - lastLeftPulse 
         deltaRightPulse = encRight-lastRightPulse
+
         sLeft = pulseConst*deltaLeftPulse
         sRight = pulseConst*deltaRightPulse
 
-        vLeft = sLeft/deltaTime
-        vRight = sRight/deltaTime
-        vSpeed = (vLeft+vRight)/2
+        vLeft = deltaLeftPulse/float((pulsePerM))#sLeft/deltaTime
+        vRight = deltaRightPulse/float((pulsePerM))#sRight/deltaTime
+        vSpeed = (-vLeft+vRight)/2.0
+        phi =(vSpeed*sin(gamma)/d_robot)# *deltaTime
+        # delta_gama = (vRight-vLeft)/l_robot
+        x = vSpeed*cos(gamma)*cos(phi)# *deltaTime
+        y = vSpeed*cos(gamma)*sin(phi)# *deltaTime
+        
 
-        delta_gama = (vRight-vLeft)/l_robot
+      
+      print(f"x: {x} | y: {y} | phi: {phi} | gamma: {gamma}")
+        
+
         
 
       
