@@ -13,9 +13,11 @@ tag = None
 
 # Handle line sensor
 def handleLine(msg):
-  print(msg.line.left, msg.line.right)
+  #print(msg.line.left, msg.line.right)
   lineLeft = msg.line.left if not isnan(msg.line.left) else None
   lineRight = msg.line.right if not isnan(msg.line.right) else None
+
+  print(f"Line L: {lineLeft} | Line R: {lineRight}")
   
   v, w = 0.0, 0.0
 
