@@ -55,7 +55,7 @@ with Agv() as robot:
     lastLeftPulse = 0
     sLeft = 0
     sRight = 0
-    pulseConst = 1/pulsePerM
+    pulseConst = float(1/pulsePerM)
     vLeft = 0
     vRight = 0
     lastTime = 0
@@ -77,7 +77,7 @@ with Agv() as robot:
 
       #TODO Implement odometry here ...
       print('Encoders: ldeltaRightPulseeft={}, right={}, heading={}'.format(encLeft, encRight, encHeading))
-      gamma = ams.wrapToPi(((encHeading-910)*2*pi)/(8192))
+      gamma = (-1)*ams.wrapToPi(((encHeading-2568)*2*pi)/(8192)) # 910
       if isFirst:
         # Just read
         lastLeftPulse= encLeft        
@@ -97,16 +97,17 @@ with Agv() as robot:
         sLeft = pulseConst*deltaLeftPulse
         sRight = pulseConst*deltaRightPulse
 
-        vLeft = deltaLeftPulse/float((pulsePerM))#sLeft/deltaTime
-        vRight = deltaRightPulse/float((pulsePerM))#sRight/deltaTime
+        vLeft = deltaLeftPulse/pulsePerM #sLeft/deltaTime
+        vRight = deltaRightPulse/pulsePerM #sRight/deltaTime
         vSpeed = (-vLeft+vRight)/2.0
-        phi =(vSpeed*sin(gamma)/d_robot)# *deltaTime
-        # delta_gama = (vRight-vLeft)/l_robot
-        x = vSpeed*cos(gamma)*cos(phi)# *deltaTime
-        y = vSpeed*cos(gamma)*sin(phi)# *deltaTime
         
-
-      
+        # delta_gama = (vRight-vLeft)/l_robot
+        x += vSpeed*cos(gamma)*cos(phi)# *deltaTime
+        y += vSpeed*cos(gamma)*sin(phi)# *deltaTime
+        phi +=(vSpeed*sin(gamma))/(d_robot)# *deltaTime
+        
+      lastLeftPulse = encLeft
+      lastRightPulse = encRight      
       print(f"x: {x} | y: {y} | phi: {phi} | gamma: {gamma}")
         
 
