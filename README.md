@@ -15,9 +15,18 @@ ssh pic@192.168.222.72
 ```
 4. Go to working directory
 ```bash
- cd /ros/work/src/amsagv/scripts
+cd ros/work/src/amsagv/scripts/
  ```
  5. Run the script:
  ```bash
 rosrun amsagv agv.py
  ```
+
+6. Run tag reader
+```bash
+rosrun amsagv tag_reader.py
+```
+6. Run control line
+```bash
+rosrun amsagv control_line.py
+```
