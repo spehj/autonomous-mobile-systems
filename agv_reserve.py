@@ -62,11 +62,6 @@ with Agv() as robot:
     vSpeed = 0
     d_robot = 0.1207
     l_robot = 0.043
-
-    phi_ref = 0
-    x_ref = 40
-    y_ref = 40
-
     while not rospy.is_shutdown():
       t = rospy.Time.now()
 
@@ -115,10 +110,8 @@ with Agv() as robot:
       lastRightPulse = encRight      
       # print(f"x: {x} | y: {y} | phi: {phi} | gamma: {gamma}")
 
+
       
-
-
-
 
 
 
@@ -135,13 +128,10 @@ with Agv() as robot:
 
 
       # Odometry message
-      
       msgOdom.header.stamp = t
       msgOdom.pose.pose = ams.poseToPoseMsg(x, y, phi)
-      msgOdom.pose.pose.position.z = gamma
       # Publish odometry message
       pubOdom.publish(msgOdom)
-      
 
       #
       # Line sensor
