@@ -14,7 +14,7 @@ def followLeft(K, lineLeft, v):
   """
   Regulator to follow left side.
   """
-  refLeft = 0.15
+  refLeft = -0.3
   err = refLeft+lineLeft
   w = K*err
   return v,w
@@ -23,8 +23,8 @@ def followRight(K, lineRight, v):
   """
   Regulator to follow left side.
   """
-  refRight = 0.3
-  err = -refRight+lineRight
+  refRight = 0.5
+  err = refRight+lineRight
   w = K*err
   return v,w
 
@@ -32,7 +32,7 @@ def followRight(K, lineRight, v):
 
 # Handle line sensor
 def handleLine(msg):
-  K = 2.5
+  K = 3
   # Dictionary of tags: key is tag ID, value of 0 is folow left line, value of 1 is follow right line 
   tagsDict = {20:0, 18:1, 8:0, 5:1, 1:1,9:1}
   #print(msg.line.left, msg.line.right)
@@ -45,27 +45,19 @@ def handleLine(msg):
 
   # Follow left or right if tag is not in dictionary (left is 0, right is 1)
   following = 1
-  if lineLeft is None or lineRight is None: # Ce ne zaznavamo crte
+  if (following == 0 and lineLeft is None) or (following == 1 and lineRight is None): # Ce ne zaznavamo crte
     v = 0.0
     w = 0.0
-  # elif lineLeft == 1 and lineRight == -1:
-  #   # If crossing crossroad go straight
-  #   w=0.0
   elif tag in tagsDict:
     if tagsDict[tag] == 0:
-      v,w = followLeft(K=K,lineLeft=lineLeft, v = 0.2)
       following = 0
     elif tagsDict[tag] == 1:
-      v,w = followRight(K=K,lineRight=lineRight, v = 0.2)
-      following = 1
-  else:
-    if following == 0:
-      v,w = followLeft(K=K,lineLeft=lineLeft, v = 0.2)
-      following = 0
-    elif following ==1:
-      v,w = followRight(K=K,lineRight=lineRight, v = 0.2)
       following = 1
 
+  if following == 0:
+    v,w = followLeft(K=K,lineLeft=lineLeft, v = 0.15)
+  elif following ==1:
+    v,w = followRight(K=K,lineRight=lineRight, v = 0.15)
 
   #print(f"w: {w}")
   # Velocity commands message
