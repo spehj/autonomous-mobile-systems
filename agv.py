@@ -82,7 +82,7 @@ with Agv() as robot:
 
       #TODO Implement odometry here ...
       print('Encoders: ldeltaRightPulseeft={}, right={}, heading={}'.format(encLeft, encRight, encHeading))
-      gamma = (-1)*ams.wrapToPi(((encHeading-2568)*2*pi)/(8192)) # 910
+      gamma = (-1)*ams.wrapToPi(((encHeading+2475)*2*pi)/(8192)) # encHeading-2568
       if isFirst:
         # Just read
         lastLeftPulse= encLeft        
@@ -113,7 +113,7 @@ with Agv() as robot:
         
       lastLeftPulse = encLeft
       lastRightPulse = encRight      
-      # print(f"x: {x} | y: {y} | phi: {phi} | gamma: {gamma}")
+      print(f"gamma: {gamma} | x: {x}| y: {y}")
 
       
 
