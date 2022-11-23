@@ -30,3 +30,9 @@ rosrun amsagv tag_reader.py
 ```bash
 rosrun amsagv control_line.py
 ```
+
+6. Run control point odom
+```bash
+rosrun amsagv agv.py
+rosrun amsagv control_point_odom.py
+```
