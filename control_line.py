@@ -6,6 +6,7 @@ from geometry_msgs.msg import Twist
 from amsagv_msgs.msg import LineStamped, TagStamped
 from math import pi, sin, cos, isnan
 from world import MTAG
+from amsagv_msgs.msg import ActionsStamped
 
 
 
@@ -27,6 +28,9 @@ def followRight(K, lineRight, v):
   err = refRight+lineRight
   w = K*err
   return v,w
+
+def handleActions(msg):
+  print(msg)
 
 
 
@@ -87,6 +91,8 @@ try:
   subLine = rospy.Subscriber('line', LineStamped, handleLine)
   # Tag subscriber
   subTag = rospy.Subscriber('tag', TagStamped, handleTag)
+  # Action subscriber
+  rospy.Subscriber('path_actions', ActionsStamped, handleActions)
 
   rospy.spin()
 except KeyboardInterrupt:

@@ -44,7 +44,7 @@ with Agv() as robot:
 
     # Odometry initial state
     x, y, phi, gamma = 0.0, 0.0, 0.0, 0.0 # Robot configuration
-    fd = 0.0 # Travelled distance of the front cart
+    # fd = 0.0 # Travelled distance of the front cart
 
     rate = rospy.Rate(50)
     isFirst = True
@@ -58,14 +58,10 @@ with Agv() as robot:
     pulseConst = float(1/pulsePerM)
     vLeft = 0
     vRight = 0
-    lastTime = 0
     vSpeed = 0
     d_robot = 0.1207
     l_robot = 0.043
-
-    phi_ref = 0
-    x_ref = 40
-    y_ref = 40
+    path_distance = 0 # Path of fron axis
 
     while not rospy.is_shutdown():
       t = rospy.Time.now()
@@ -95,7 +91,6 @@ with Agv() as robot:
         isFirst = False
       elif not isFirst:
         # Read and move
-        # deltaTime = float(t-lastTime)
         deltaLeftPulse = encLeft - lastLeftPulse 
         deltaRightPulse = encRight-lastRightPulse
 
@@ -105,34 +100,17 @@ with Agv() as robot:
         vLeft = deltaLeftPulse/pulsePerM #sLeft/deltaTime
         vRight = deltaRightPulse/pulsePerM #sRight/deltaTime
         vSpeed = (-vLeft+vRight)/2.0
+
+        path_distance += vSpeed
         
         # delta_gama = (vRight-vLeft)/l_robot
-        x += vSpeed*cos(gamma)*cos(phi)# *deltaTime
-        y += vSpeed*cos(gamma)*sin(phi)# *deltaTime
-        phi +=(vSpeed*sin(gamma))/(d_robot)# *deltaTime
+        x += vSpeed*cos(gamma)*cos(phi)
+        y += vSpeed*cos(gamma)*sin(phi)
+        phi +=(vSpeed*sin(gamma))/(d_robot)
         
       lastLeftPulse = encLeft
       lastRightPulse = encRight      
       print(f"gamma: {gamma} | x: {x}| y: {y}")
-
-      
-
-
-
-
-
-
-        
-
-        
-
-      
-      
-      
-      
-      lastTime = t
-
-
 
       # Odometry message
       
@@ -142,10 +120,7 @@ with Agv() as robot:
       # Publish odometry message
       pubOdom.publish(msgOdom)
       
-
-      #
       # Line sensor
-      #
 
       # Line-sensor values
       lineValues = robot.getLineValues()
@@ -158,7 +133,7 @@ with Agv() as robot:
       msgLine.line.left = edgeLeft if edgeLeft is not None else float('nan')
       msgLine.line.right = edgeRight if edgeRight is not None else float('nan')
       msgLine.line.heading = gamma
-      msgLine.line.distance = fd
+      msgLine.line.distance = path_distance
       # Publish line-sensor message
       pubLine.publish(msgLine)
 
