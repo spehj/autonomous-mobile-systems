@@ -107,9 +107,9 @@ class PathPlanning(object):
         if tagMap[activeId][j] == nextId: # Najdi index naslednje tocke
           distance = tagMap[activeId][j+1] # Razdalja do naslednje tocke
           if j == 0: # Index desne tocke = 0
-            direction = 'right'
-          elif j == 2: # Index leve tocke = 2
             direction = 'left'
+          elif j == 2: # Index leve tocke = 2
+            direction = 'right'
           else: # Index naravnost tocke = 4
             direction = 'straight'
       actions.append([direction, nextId, distance])
