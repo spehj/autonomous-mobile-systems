@@ -9,7 +9,7 @@ from nav_msgs.msg import Odometry
 from amsagv_msgs.msg import LineStamped
 from math import cos, sin, pi
 
-
+global distance
 
 with Agv() as robot:
   # Handle velocity commands
@@ -61,8 +61,8 @@ with Agv() as robot:
     vSpeed = 0
     d_robot = 0.1207
     l_robot = 0.043
-    path_distance = 0 # Path of fron axis
-
+    #path_distance = 0 # Path of fron axis
+    distance = 0
     while not rospy.is_shutdown():
       t = rospy.Time.now()
 
@@ -101,7 +101,7 @@ with Agv() as robot:
         vRight = deltaRightPulse/pulsePerM #sRight/deltaTime
         vSpeed = (-vLeft+vRight)/2.0
 
-        path_distance += vSpeed
+        distance += vSpeed
         
         # delta_gama = (vRight-vLeft)/l_robot
         x += vSpeed*cos(gamma)*cos(phi)
@@ -133,7 +133,7 @@ with Agv() as robot:
       msgLine.line.left = edgeLeft if edgeLeft is not None else float('nan')
       msgLine.line.right = edgeRight if edgeRight is not None else float('nan')
       msgLine.line.heading = gamma
-      msgLine.line.distance = path_distance
+      msgLine.line.distance = distance
       # Publish line-sensor message
       pubLine.publish(msgLine)
 

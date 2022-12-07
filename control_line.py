@@ -38,13 +38,9 @@ def handleActions(msg):
   global actionsDict
 
   for index, action in enumerate(actions.actions):
-    actionsList[index] = [action.action.id, action.action.name]
-    if action.action.name == "right":
-      actionsDict[action.action.id] = 1
-    elif action.action.name == "left":
-      actionsDict[action.action.id] = 0
+    actionsList.append([action.action.id, action.action.name, action.action.distance]) 
   #print(action.action.name)
-  print(actionsDict)
+  print(actionsList)
 
 # def getPath(msg):
 #   # actions: 
@@ -78,7 +74,7 @@ def handleActions(msg):
 #   #       nsecs:         0
 #   #     frame_id: ''
 #   #   action: 
-#   #     name: "right"
+#   #     name: "right"subLine
 #   #     id: 139
 #   #     distance: 0.9850000143051147
 
@@ -86,17 +82,64 @@ def handleActions(msg):
 # Handle line sensor
 def handleLine(msg):
   global actionsDict
+  global actionsList
   K = 3
   # Dictionary of tags: key is tag ID, value of 0 is folow left line, value of 1 is follow right line 
   # tagsDict = {20:0, 18:1, 8:0, 5:1, 1:1,9:1}
   # while len(actionsDict) == 0:
   #   pass
-  tagsDict = actionsDict
+  
   #print(msg.line.left, msg.line.right)
   lineLeft = msg.line.left if not isnan(msg.line.left) else None
   lineRight = msg.line.right if not isnan(msg.line.right) else None
+  distance = msg.line.distance if not isnan(msg.line.distance) else None
 
+
+  counter = 0
+
+  current_action = actionsList[counter] # Action to goal point
+  if current_action[0] >= 100:
+    # Virtual tag
+    # Calculate distance to tag
+    # When distance is same 
+    # counter++
+    if not distance_set: 
+      start_distance = distance
+      distance_set = True
+    
+    if current_action[1] == "left":
+      v,w = followLeft(K=K,lineLeft=lineLeft, v = 0.15)
+    elif current_action[1] == "right":
+      v,w = followRight(K=K,lineRight=lineRight, v = 0.15)
+    else:
+      v,w = 0
+      print("SPECIAL STOP")
+
+    distance_to_node = distance -start_distance    
+    if distance_to_node == current_action[2]:   # TODO 
+      counter +=1
+
+    
+
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ##################################################################
   #print(f"Line L: {lineLeft} | Line R: {lineRight}")
+  tagsDict = actionsDict
   
   #v, w = 0.0, 0.0
 
@@ -115,7 +158,7 @@ def handleLine(msg):
     v,w = followLeft(K=K,lineLeft=lineLeft, v = 0.15)
   elif following ==1:
     v,w = followRight(K=K,lineRight=lineRight, v = 0.15)
-
+  #################################################################
   print(tagsDict)
   #print(f"w: {w}")
   # Velocity commands message
