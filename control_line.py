@@ -13,6 +13,8 @@ actions = None
 tag = None
 actionsDict = {}
 actionsList = []
+counter = None
+
 def followLeft(K, lineLeft, v):
   """
   Regulator to follow left side.
@@ -35,11 +37,11 @@ def handleActions(msg):
   global actions
   global actionsList
   actions = msg
-  global actionsDict
+  #global actionsDict
 
-  for index, action in enumerate(actions.actions):
+  for index, action in enumerate(actions.actions): # Dobi akcije iz sporocila in sestavi list
+    # actionsList = [smer, naslednja_tocka, razdalja]
     actionsList.append([action.action.id, action.action.name, action.action.distance]) 
-  #print(action.action.name)
   print(actionsList)
 
 # def getPath(msg):
@@ -74,7 +76,7 @@ def handleActions(msg):
 #   #       nsecs:         0
 #   #     frame_id: ''
 #   #   action: 
-#   #     name: "right"subLine
+#   #     name: "right"
 #   #     id: 139
 #   #     distance: 0.9850000143051147
 
@@ -83,6 +85,7 @@ def handleActions(msg):
 def handleLine(msg):
   global actionsDict
   global actionsList
+  global counter 
   K = 3
   # Dictionary of tags: key is tag ID, value of 0 is folow left line, value of 1 is follow right line 
   # tagsDict = {20:0, 18:1, 8:0, 5:1, 1:1,9:1}
@@ -94,48 +97,52 @@ def handleLine(msg):
   lineRight = msg.line.right if not isnan(msg.line.right) else None
   distance = msg.line.distance if not isnan(msg.line.distance) else None
 
+  #if not distance_set: 
+    #offset_distance = distance
+    #distance_set = True
 
-  counter = 0
+  if counter == None: # Prvic skozi akcije
+    counter = 0
+    offset_distance = distance
 
-  current_action = actionsList[counter] # Action to goal point
-  if current_action[0] >= 100:
-    # Virtual tag
-    # Calculate distance to tag
-    # When distance is same 
-    # counter++
-    if not distance_set: 
-      start_distance = distance
-      distance_set = True
+  if counter < len(actionsList): # Velikost stevca ne sme biti vecja od dolzine liste
+    current_action = actionsList[counter] # Action to next node
+    if current_action[0] >= 100: # Virtual tag
+      distance_to_node = distance - offset_distance # Izracun razdalje    
+      if distance_to_node >= current_action[2]: # Ce smo prevozili zahtevano razdaljo 
+        counter +=1 # Pojdi na naslednjo akcijo
+        offset_distance = distance 
+    else: # Real tag
+      if tag == current_action[0]: # Ce smo prevozili zahtevani tag
+        counter +=1 # Pojdi na naslednjo akcijo
+        offset_distance = distance 
+      if distance_to_node >= (current_action[2]*1.2): # Ce smo prevozili preveliko razdaljo
+        print("STOP: TAG NOT REACHED!")
+        # TODO Kaj pa zdaj??
+        # error = 1 # Preverjamo po vrstici 143 in damo v,w = 0 ??
     
-    if current_action[1] == "left":
-      v,w = followLeft(K=K,lineLeft=lineLeft, v = 0.15)
+    if lineLeft == None or lineRight == None: # Ce ne zaznavamo crte
+      print("STOP: LINE NOT DETECTED!")
+      v,w = 0
+      # TODO Kaj pa zdaj??
+    elif current_action[1] == "left":
+      v,w = followLeft(K=K,lineLeft=lineLeft, v = 0.15) # Sledi levemu robu crte
     elif current_action[1] == "right":
-      v,w = followRight(K=K,lineRight=lineRight, v = 0.15)
+      v,w = followRight(K=K,lineRight=lineRight, v = 0.15) # Sledi desnemu robu crte
     else:
       v,w = 0
-      print("SPECIAL STOP")
+      print("STOP: SPECIAL ACTION!")
+      # TODO Kaj pa zdaj??
+      # Glede na tag ID se odlocimo za ustrezno akcijo? voznja naravnost(18, 106, 108), voznja v tocko(132, 137) ??
 
-    distance_to_node = distance -start_distance    
-    if distance_to_node == current_action[2]:   # TODO 
-      counter +=1
+    if counter == len(actionsList): # Prisli smo do konca liste
+      v,w = 0
+      print("STOP: GOAL REACHED!")
+      # TODO Kaj pa zdaj??
+      # counter = None # Priprava za novo pot??
 
-    
-
-
-     
-
-
-
-
-
-
-
-
-
-
-
-
-
+  
+  
 
   ##################################################################
   #print(f"Line L: {lineLeft} | Line R: {lineRight}")
