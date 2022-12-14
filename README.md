@@ -36,3 +36,8 @@ rosrun amsagv control_line.py
 rosrun amsagv agv.py
 rosrun amsagv control_point_odom.py
 ```
+
+7. Run display on PC:
+~~~bash
+rosrun amsagv display.py
+~~~

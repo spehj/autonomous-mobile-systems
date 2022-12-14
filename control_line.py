@@ -13,7 +13,8 @@ actions = None
 tag = None
 actionsDict = {}
 actionsList = []
-counter = None
+counter = -1
+offset_distance = 0
 
 def followLeft(K, lineLeft, v):
   """
@@ -86,6 +87,7 @@ def handleLine(msg):
   global actionsDict
   global actionsList
   global counter 
+  global offset_distance
   K = 3
   # Dictionary of tags: key is tag ID, value of 0 is folow left line, value of 1 is follow right line 
   # tagsDict = {20:0, 18:1, 8:0, 5:1, 1:1,9:1}
@@ -101,7 +103,9 @@ def handleLine(msg):
     #offset_distance = distance
     #distance_set = True
 
-  if counter == None: # Prvic skozi akcije
+  # 
+  # print(f"Counter: {offset_distance}")
+  if counter == -1: # Prvic skozi akcije
     counter = 0
     offset_distance = distance
 
@@ -116,8 +120,8 @@ def handleLine(msg):
       if tag == current_action[0]: # Ce smo prevozili zahtevani tag
         counter +=1 # Pojdi na naslednjo akcijo
         offset_distance = distance 
-      if distance_to_node >= (current_action[2]*1.2): # Ce smo prevozili preveliko razdaljo
-        print("STOP: TAG NOT REACHED!")
+      #if distance_to_node >= (current_action[2]*1.2): # Ce smo prevozili preveliko razdaljo
+        #print("STOP: TAG NOT REACHED!")
         # TODO Kaj pa zdaj??
         # error = 1 # Preverjamo po vrstici 143 in damo v,w = 0 ??
     
@@ -145,28 +149,28 @@ def handleLine(msg):
   
 
   ##################################################################
-  #print(f"Line L: {lineLeft} | Line R: {lineRight}")
-  tagsDict = actionsDict
+  # #print(f"Line L: {lineLeft} | Line R: {lineRight}")
+  # tagsDict = actionsDict
   
-  #v, w = 0.0, 0.0
+  # #v, w = 0.0, 0.0
 
-  # Follow left or right if tag is not in dictionary (left is 0, right is 1)
-  following = 1
-  if (following == 0 and lineLeft is None) or (following == 1 and lineRight is None): # Ce ne zaznavamo crte
-    v = 0.0
-    w = 0.0
-  elif tag in tagsDict:
-    if tagsDict[tag] == 0:
-      following = 0
-    elif tagsDict[tag] == 1:
-      following = 1
+  # # Follow left or right if tag is not in dictionary (left is 0, right is 1)
+  # following = 1
+  # if (following == 0 and lineLeft is None) or (following == 1 and lineRight is None): # Ce ne zaznavamo crte
+  #   v = 0.0
+  #   w = 0.0
+  # elif tag in tagsDict:
+  #   if tagsDict[tag] == 0:
+  #     following = 0
+  #   elif tagsDict[tag] == 1:
+  #     following = 1
 
-  if following == 0:
-    v,w = followLeft(K=K,lineLeft=lineLeft, v = 0.15)
-  elif following ==1:
-    v,w = followRight(K=K,lineRight=lineRight, v = 0.15)
+  # if following == 0:
+  #   v,w = followLeft(K=K,lineLeft=lineLeft, v = 0.15)
+  # elif following ==1:
+  #   v,w = followRight(K=K,lineRight=lineRight, v = 0.15)
   #################################################################
-  print(tagsDict)
+  # print(tagsDict)
   #print(f"w: {w}")
   # Velocity commands message
   msgCmdVel = Twist()
