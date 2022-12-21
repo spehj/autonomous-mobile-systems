@@ -27,7 +27,7 @@ def followLeft(K, lineLeft, v):
 
 def followRight(K, lineRight, v):
   """
-  Regulator to follow left side.
+  Regulator to follow right side.
   """
   refRight = 0.5
   err = refRight+lineRight
@@ -103,12 +103,15 @@ def handleLine(msg):
     #offset_distance = distance
     #distance_set = True
 
+  v=0
+  w=0
   # 
-  # print(f"Counter: {offset_distance}")
+
+  #print(f"Counter: {counter}")
   if counter == -1: # Prvic skozi akcije
     counter = 0
     offset_distance = distance
-
+  #print(f"Len: {len(actionsList)}")
   if counter < len(actionsList): # Velikost stevca ne sme biti vecja od dolzine liste
     current_action = actionsList[counter] # Action to next node
     if current_action[0] >= 100: # Virtual tag
@@ -127,23 +130,36 @@ def handleLine(msg):
     
     if lineLeft == None or lineRight == None: # Ce ne zaznavamo crte
       print("STOP: LINE NOT DETECTED!")
-      v,w = 0
+      v,w = 0,0
       # TODO Kaj pa zdaj??
     elif current_action[1] == "left":
       v,w = followLeft(K=K,lineLeft=lineLeft, v = 0.15) # Sledi levemu robu crte
     elif current_action[1] == "right":
       v,w = followRight(K=K,lineRight=lineRight, v = 0.15) # Sledi desnemu robu crte
-    else:
-      v,w = 0
-      print("STOP: SPECIAL ACTION!")
+    elif current_action[1] == "straight":
+      v = 0.1
+      w = 0
+      # v,w = 0,0
+      print("STRAIGHT: SPECIAL ACTION!")
       # TODO Kaj pa zdaj??
       # Glede na tag ID se odlocimo za ustrezno akcijo? voznja naravnost(18, 106, 108), voznja v tocko(132, 137) ??
+    elif current_action[1] == 14 and tag == None :
+      counter+=1
+      offset_distance = distance
+    else:
+      v,w=0,0
+      print("STOP: SPECIAL ACTION!")
+    
+    print(f"counter: {counter} | action to {current_action[0]} is {current_action[1]}")
 
     if counter == len(actionsList): # Prisli smo do konca liste
-      v,w = 0
+      v,w = 0,0
       print("STOP: GOAL REACHED!")
       # TODO Kaj pa zdaj??
       # counter = None # Priprava za novo pot??
+
+  # v,w = 0
+  # print("STOP")
 
   
   
@@ -185,8 +201,8 @@ def handleTag(msg):
   global tag
   tag = MTAG.get(msg.tag.id, None)
   
-  #print('New tag: {} -> {}'.format(msg.tag.id, tag))
-  #print(40*"-")
+  print('New tag: {} -> {}'.format(msg.tag.id, tag))
+  print(40*"-")
 
 
 
