@@ -143,9 +143,11 @@ def handleLine(msg):
       print("STRAIGHT: SPECIAL ACTION!")
       # TODO Kaj pa zdaj??
       # Glede na tag ID se odlocimo za ustrezno akcijo? voznja naravnost(18, 106, 108), voznja v tocko(132, 137) ??
-    elif current_action[1] == 14 and tag == None :
-      counter+=1
-      offset_distance = distance
+    # elif current_action[0] == 14 and tag == None :
+    #   #  Tag 14 and None are close
+    #   counter+=1
+    #   offset_distance = distance
+    #   print("COUNTER+++")
     else:
       v,w=0,0
       print("STOP: SPECIAL ACTION!")
