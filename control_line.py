@@ -45,42 +45,6 @@ def handleActions(msg):
     actionsList.append([action.action.id, action.action.name, action.action.distance]) 
   print(actionsList)
 
-# def getPath(msg):
-#   # actions: 
-#   # - 
-#   #   header: 
-#   #     seq: 0
-#   #     stamp: 
-#   #       secs: 0
-#   #       nsecs:         0
-#   #     frame_id: ''
-#   #   action: 
-#   #     name: "right"
-#   #     id: 111
-#   #     distance: 0.4869999885559082
-#   # - 
-#   #   header: 
-#   #     seq: 0
-#   #     stamp: 
-#   #       secs: 0
-#   #       nsecs:         0
-#   #     frame_id: ''
-#   #   action: 
-#   #     name: "right"
-#   #     id: 9
-#   #     distance: 0.5199999809265137
-#   # - 
-#   #   header: 
-#   #     seq: 0
-#   #     stamp: 
-#   #       secs: 0
-#   #       nsecs:         0
-#   #     frame_id: ''
-#   #   action: 
-#   #     name: "right"
-#   #     id: 139
-#   #     distance: 0.9850000143051147
-
 
 # Handle line sensor
 def handleLine(msg):
@@ -89,23 +53,11 @@ def handleLine(msg):
   global counter 
   global offset_distance
   K = 3
-  # Dictionary of tags: key is tag ID, value of 0 is folow left line, value of 1 is follow right line 
-  # tagsDict = {20:0, 18:1, 8:0, 5:1, 1:1,9:1}
-  # while len(actionsDict) == 0:
-  #   pass
-  
-  #print(msg.line.left, msg.line.right)
+  v,w=0,0
+
   lineLeft = msg.line.left if not isnan(msg.line.left) else None
   lineRight = msg.line.right if not isnan(msg.line.right) else None
   distance = msg.line.distance if not isnan(msg.line.distance) else None
-
-  #if not distance_set: 
-    #offset_distance = distance
-    #distance_set = True
-
-  v=0
-  w=0
-  # 
 
   #print(f"Counter: {counter}")
   if counter == -1: # Prvic skozi akcije
@@ -125,9 +77,8 @@ def handleLine(msg):
         offset_distance = distance 
       #if distance_to_node >= (current_action[2]*1.2): # Ce smo prevozili preveliko razdaljo
         #print("STOP: TAG NOT REACHED!")
-        # TODO Kaj pa zdaj??
         # error = 1 # Preverjamo po vrstici 143 in damo v,w = 0 ??
-    
+
     if lineLeft == None or lineRight == None: # Ce ne zaznavamo crte
       print("STOP: LINE NOT DETECTED!")
       v,w = 0,0
@@ -139,57 +90,17 @@ def handleLine(msg):
     elif current_action[1] == "straight":
       v = 0.1
       w = 0
-      # v,w = 0,0
       print("STRAIGHT: SPECIAL ACTION!")
-      # TODO Kaj pa zdaj??
-      # Glede na tag ID se odlocimo za ustrezno akcijo? voznja naravnost(18, 106, 108), voznja v tocko(132, 137) ??
-    # elif current_action[0] == 14 and tag == None :
-    #   #  Tag 14 and None are close
-    #   counter+=1
-    #   offset_distance = distance
-    #   print("COUNTER+++")
     else:
       v,w=0,0
       print("STOP: SPECIAL ACTION!")
     
-    print(f"counter: {counter} | action to {current_action[0]} is {current_action[1]}")
+    # print(f"counter: {counter} | action to {current_action[0]} is {current_action[1]}")
 
     if counter == len(actionsList): # Prisli smo do konca liste
       v,w = 0,0
       print("STOP: GOAL REACHED!")
-      # TODO Kaj pa zdaj??
-      # counter = None # Priprava za novo pot??
 
-  # v,w = 0
-  # print("STOP")
-
-  
-  
-
-  ##################################################################
-  # #print(f"Line L: {lineLeft} | Line R: {lineRight}")
-  # tagsDict = actionsDict
-  
-  # #v, w = 0.0, 0.0
-
-  # # Follow left or right if tag is not in dictionary (left is 0, right is 1)
-  # following = 1
-  # if (following == 0 and lineLeft is None) or (following == 1 and lineRight is None): # Ce ne zaznavamo crte
-  #   v = 0.0
-  #   w = 0.0
-  # elif tag in tagsDict:
-  #   if tagsDict[tag] == 0:
-  #     following = 0
-  #   elif tagsDict[tag] == 1:
-  #     following = 1
-
-  # if following == 0:
-  #   v,w = followLeft(K=K,lineLeft=lineLeft, v = 0.15)
-  # elif following ==1:
-  #   v,w = followRight(K=K,lineRight=lineRight, v = 0.15)
-  #################################################################
-  # print(tagsDict)
-  #print(f"w: {w}")
   # Velocity commands message
   msgCmdVel = Twist()
   msgCmdVel.linear.x = v

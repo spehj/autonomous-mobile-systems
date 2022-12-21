@@ -69,22 +69,15 @@ with Agv() as robot:
       # Read sensors
       robot.readSensors()
 
-      #
-      # Odometry
-      #
-
       # Encoders
       encLeft, encRight, encHeading = robot.getEncoders()
 
-      #TODO Implement odometry here ...
-      # print('Encoders: ldeltaRightPulseeft={}, right={}, heading={}'.format(encLeft, encRight, encHeading))
+    
       gamma = (-1)*ams.wrapToPi(((encHeading+2475)*2*pi)/(8192)) # encHeading-2568
       if isFirst:
         # Just read
         lastLeftPulse= encLeft        
         lastRightPulse = encRight
-        # TODO add heading
-        # gamma = ((encHeading-1100)*2*pi)/(8192)
         x = 0
         y = 0
         phi = 0
@@ -110,7 +103,6 @@ with Agv() as robot:
         
       lastLeftPulse = encLeft
       lastRightPulse = encRight      
-      # print(f"gamma: {gamma} | x: {x}| y: {y}")
 
       # Odometry message
       
