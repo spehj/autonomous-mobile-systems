@@ -109,6 +109,7 @@ with Agv() as robot:
       msgOdom.header.stamp = t
       msgOdom.pose.pose = ams.poseToPoseMsg(x, y, phi)
       msgOdom.pose.pose.position.z = gamma
+      msgOdom.twist.twist.linear.x = vSpeed
       # Publish odometry message
       pubOdom.publish(msgOdom)
       

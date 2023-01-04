@@ -20,8 +20,8 @@ def handleOdometry(msg):
   beta = 0
   phi_err = 0
   phi_goal = 0
-  x_goal = 0.40
-  y_goal = 0.40
+  x_goal = -0.50
+  y_goal = 0
   d_robot = 0.1207
   r = 0.1
   Kv = 0.4
@@ -58,7 +58,7 @@ def handleOdometry(msg):
       vs=0.3
 
     gamma_goal = atan2(d_robot*w,v)
-    ws = Kg*(gamma_goal-gamma)
+    ws = Kg*ams.wrapToPi(gamma_goal-gamma)
 
 
 
